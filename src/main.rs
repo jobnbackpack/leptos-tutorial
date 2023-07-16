@@ -5,6 +5,24 @@ fn main() {
 }
 
 #[component]
+fn ProgressBar(
+    cx: Scope,
+    /// The maximum value of the progress bar
+    #[prop(default = 100)]
+    max: u16,
+    /// How much progress should be displayed
+    #[prop(into)]
+    progress: Signal<i32>,
+) -> impl IntoView {
+    view! { cx,
+        <progress
+            max=max
+            value=progress
+        />
+    }
+}
+
+#[component]
 fn App(cx: Scope) -> impl IntoView {
     let (count, set_count) = create_signal(cx, 0);
     let double_count = move || count() * 2;
@@ -21,10 +39,10 @@ fn App(cx: Scope) -> impl IntoView {
                 "Click me: "
                 {count}
             </button>
-            <progress
-                max="50"
-                value=double_count
-                />
+            // .into() converts `ReadSignal` to `Signal`
+            <ProgressBar progress=count max=100 />
+            // use `Signal::derive()` to wrap a derived signal
+            <ProgressBar progress=Signal::derive(cx, double_count) />
             <p>
                 "Double Count: "
                 {double_count}
