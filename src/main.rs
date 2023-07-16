@@ -1,7 +1,7 @@
 use leptos::{ev::SubmitEvent, html::Input, *};
 
 fn main() {
-    mount_to_body(|cx| view! { cx, <App/> })
+    mount_to_body(|cx| view! { cx, <div class="container"><App/></div> })
 }
 
 #[component]

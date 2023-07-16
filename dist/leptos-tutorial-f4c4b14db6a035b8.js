@@ -639,7 +639,7 @@ async function __wbg_init(input) {
     if (wasm !== undefined) return wasm;
 
     if (typeof input === 'undefined') {
-        input = new URL('leptos-tutorial-897ff88db968de90_bg.wasm', import.meta.url);
+        input = new URL('leptos-tutorial-f4c4b14db6a035b8_bg.wasm', import.meta.url);
     }
     const imports = __wbg_get_imports();
 
