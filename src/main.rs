@@ -5,6 +5,33 @@ fn main() {
 }
 
 #[component]
+fn NumericInput(cx: Scope) -> impl IntoView {
+    let (value, set_value) = create_signal(cx, Ok(0));
+
+    let on_input = move |ev| set_value(event_target_value(&ev).parse::<i32>());
+
+    view! { cx,
+        <h2>"Error Handling"</h2>
+        <label>
+            "Type a number (or something that's not a number)"
+            <input on:input=on_input/>
+            <ErrorBoundary
+                fallback=|cx, errors| view! { cx,
+                    <div class="error">
+                        <p>"Not a number! Errors: "</p>
+                        <ul>
+                            {move || errors.get().into_iter().map(|(_,e)| view! {cx, <li> {e.to_string()}</li>}).collect_view(cx)
+                            }
+                        </ul>
+                    </div>
+                    }>
+        <p>"You entered " <strong>{value}</strong></p>
+            </ErrorBoundary>
+        </label>
+    }
+}
+
+#[component]
 fn ControlledForm(cx: Scope) -> impl IntoView {
     let (name, set_name) = create_signal(cx, "Controlled".to_string());
 
@@ -197,6 +224,8 @@ fn App(cx: Scope) -> impl IntoView {
 
             <h2>Uncontrolled Form:</h2>
             <UncontrolledForm />
+
+            <NumericInput />
         </div>
     }
 }
