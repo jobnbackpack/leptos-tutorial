@@ -1,7 +1,32 @@
+use gloo_timers::future::TimeoutFuture;
 use leptos::{ev::SubmitEvent, html::Input, *};
 
 fn main() {
     mount_to_body(|cx| view! { cx, <div class="container"><App/></div> })
+}
+
+async fn load_data() -> String {
+    TimeoutFuture::new(10_000).await;
+    "hello world".to_string()
+}
+
+#[component]
+fn AsyncWhatever(cx: Scope) -> impl IntoView {
+    let async_data = create_resource(
+        cx,
+        || (),
+        |_| async move {
+            log!("loading data from API");
+            load_data().await
+        },
+    );
+    view! { cx,
+        <h2>"My Async Data"</h2>
+        {move || match async_data.read(cx) {
+            None => view! { cx, <p>"Loading..."</p>}.into_view(cx),
+            Some(data) => view! {cx, <p>"Server returned: " {data}</p> }.into_view(cx)
+        }}
+    }
 }
 
 #[component]
@@ -242,6 +267,8 @@ fn App(cx: Scope) -> impl IntoView {
             <NumericInput />
 
             <TakesChildren render_prop=|| view!{ cx, <p>"I was in the props"</p>}><p>"I'm a child"</p></TakesChildren>
+
+            <AsyncWhatever />
         </div>
     }
 }
