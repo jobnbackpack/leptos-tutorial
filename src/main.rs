@@ -5,6 +5,20 @@ fn main() {
 }
 
 #[component]
+fn TakesChildren<F, IV>(cx: Scope, render_prop: F, children: Children) -> impl IntoView
+where
+    F: Fn() -> IV,
+    IV: IntoView,
+{
+    view! {cx,
+        <h2>"Render Prop"</h2>
+        {render_prop()}
+        <h2>"Render Children"</h2>
+        {children(cx)}
+    }
+}
+
+#[component]
 fn NumericInput(cx: Scope) -> impl IntoView {
     let (value, set_value) = create_signal(cx, Ok(0));
 
@@ -226,6 +240,8 @@ fn App(cx: Scope) -> impl IntoView {
             <UncontrolledForm />
 
             <NumericInput />
+
+            <TakesChildren render_prop=|| view!{ cx, <p>"I was in the props"</p>}><p>"I'm a child"</p></TakesChildren>
         </div>
     }
 }
