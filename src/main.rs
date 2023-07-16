@@ -153,6 +153,20 @@ fn App(cx: Scope) -> impl IntoView {
                 "Click me: "
                 {count}
             </button>
+            <p>
+            {move || if count() % 2 == 1 {
+                "Odd"
+            } else {
+                "Even"
+            }}
+            </p>
+            <Show
+                when=move || { count() > 10 }
+                fallback=|cx| view! {cx, <p>"I'm still smaller than 10"</p>}
+            >
+                <strong>"I'm bigger than 10"</strong>
+            </Show>
+
             // .into() converts `ReadSignal` to `Signal`
             <ProgressBar progress=count max=100 />
             // use `Signal::derive()` to wrap a derived signal
