@@ -1,7 +1,47 @@
-use leptos::{ev::MouseEvent, *};
+use leptos::{ev::SubmitEvent, html::Input, *};
 
 fn main() {
     mount_to_body(|cx| view! { cx, <App/> })
+}
+
+#[component]
+fn ControlledForm(cx: Scope) -> impl IntoView {
+    let (name, set_name) = create_signal(cx, "Controlled".to_string());
+
+    view! { cx,
+        <input type="text"
+            on:input=move |ev| {
+                set_name(event_target_value(&ev));
+            }
+            prop:value=name
+        />
+        <p>"Name is: " {name}</p>
+    }
+}
+
+#[component]
+fn UncontrolledForm(cx: Scope) -> impl IntoView {
+    let (firstname, set_firstname) = create_signal(cx, "Uncontrolled".to_string());
+
+    let input_element: NodeRef<Input> = create_node_ref(cx);
+
+    let on_submit = move |ev: SubmitEvent| {
+        ev.prevent_default();
+
+        let value = input_element().expect("<input> to exist").value();
+        set_firstname(value);
+    };
+
+    view! { cx,
+        <form on:submit=on_submit>
+            <input type="text"
+                value=firstname
+                node_ref=input_element
+            />
+            <input type="submit" value="Submit"/>
+        </form>
+        <p>"Name is: " {firstname}</p>
+    }
 }
 
 #[component]
@@ -137,6 +177,12 @@ fn App(cx: Scope) -> impl IntoView {
 
             <h2>dynamic counter list</h2>
             <DynList initial_length=5/>
+
+            <h2>Controlled Form:</h2>
+            <ControlledForm />
+
+            <h2>Uncontrolled Form:</h2>
+            <UncontrolledForm />
         </div>
     }
 }
