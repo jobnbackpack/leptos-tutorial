@@ -1,8 +1,59 @@
 use gloo_timers::future::TimeoutFuture;
 use leptos::{ev::SubmitEvent, html::Input, *};
+use uuid::Uuid;
 
 fn main() {
     mount_to_body(|cx| view! { cx, <div class="container"><App/></div> })
+}
+
+async fn add_todo(text: &str) -> Uuid {
+    _ = text;
+    TimeoutFuture::new(10_000).await;
+    Uuid::new_v4()
+}
+
+#[component]
+fn AsyncAction(cx: Scope) -> impl IntoView {
+    let add_todo = create_action(cx, |input: &String| {
+        let input = input.to_owned();
+        async move { add_todo(&input).await }
+    });
+
+    let submitted = add_todo.input();
+    let pending = add_todo.pending();
+    let todo_id = add_todo.value();
+
+    let input_ref = create_node_ref::<Input>(cx);
+    view! {cx,
+        <form
+            on:submit=move |ev| {
+                ev.prevent_default();
+                let input = input_ref.get().expect("input to exist");
+                add_todo.dispatch(input.value());
+            }
+        >
+            <label>
+                "What do you need to do?"
+                <input type="text"
+                    node_ref=input_ref
+                />
+            </label>
+            <button type="submit">"Add Todo"</button>
+        </form>
+        <p>{move || pending().then(|| "Loading...")}</p>
+        <p>
+            "Submitted: "
+            <code>{move || format!("{:#?}", submitted())}</code>
+        </p>
+        <p>
+            "Pending: "
+            <code>{move || format!("{:#?}", pending())}</code>
+        </p>
+        <p>
+            "Todo ID: "
+            <code>{move || format!("{:#?}", todo_id())}</code>
+        </p>
+    }
 }
 
 async fn load_data() -> String {
@@ -11,7 +62,7 @@ async fn load_data() -> String {
 }
 
 #[component]
-fn AsyncWhatever(cx: Scope) -> impl IntoView {
+fn AsyncResource(cx: Scope) -> impl IntoView {
     let async_data = create_resource(
         cx,
         || (),
@@ -268,7 +319,9 @@ fn App(cx: Scope) -> impl IntoView {
 
             <TakesChildren render_prop=|| view!{ cx, <p>"I was in the props"</p>}><p>"I'm a child"</p></TakesChildren>
 
-            <AsyncWhatever />
+            <AsyncResource />
+
+            <AsyncAction />
         </div>
     }
 }
