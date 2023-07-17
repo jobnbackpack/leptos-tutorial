@@ -1,5 +1,6 @@
 use gloo_timers::future::TimeoutFuture;
 use leptos::{ev::SubmitEvent, html::Input, *};
+use leptos_meta::*;
 use uuid::Uuid;
 
 fn main() {
@@ -233,6 +234,7 @@ fn DynList(cx: Scope, #[prop(default = 3)] initial_length: usize) -> impl IntoVi
 
 #[component]
 fn App(cx: Scope) -> impl IntoView {
+    provide_meta_context(cx);
     let (count, set_count) = create_signal(cx, 0);
     let double_count = move || count() * 2;
 
@@ -241,6 +243,7 @@ fn App(cx: Scope) -> impl IntoView {
     let length = 3;
     // create a list of N signals
     let counters = (1..=length).map(|idx| create_signal(cx, idx));
+    let formatter = |_| format!("lol — Leptos Online");
 
     // each item manages a reactive view
     // but the list itself will never change
@@ -259,6 +262,8 @@ fn App(cx: Scope) -> impl IntoView {
         .collect_view(cx);
 
     view! { cx,
+        <main>
+        <Title formatter/>
         <div>
             <button
                 // define an event listener with on:
@@ -323,5 +328,6 @@ fn App(cx: Scope) -> impl IntoView {
 
             <AsyncAction />
         </div>
+    </main>
     }
 }

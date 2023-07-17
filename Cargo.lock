@@ -747,6 +747,7 @@ version = "0.1.0"
 dependencies = [
  "gloo-timers",
  "leptos",
+ "leptos_meta",
  "uuid",
 ]
 
@@ -831,6 +832,20 @@ dependencies = [
  "syn 2.0.26",
  "tracing",
  "uuid",
+]
+
+[[package]]
+name = "leptos_meta"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "584e285bd0328e3637d9ed358d87a20e1e4eb4fdf6ff53b381c7c5f43f581687"
+dependencies = [
+ "cfg-if",
+ "indexmap 2.0.0",
+ "leptos",
+ "tracing",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
